@@ -1,0 +1,6 @@
+QUICK SETUP FROM PHONE
+1. Create a private GitHub repo named Cortex (or anything).
+2. Upload this whole ZIP as a release asset or extract and push the files.
+3. Make sure .github/workflows/build-apk.yml is present at the repo root.
+4. Run the “Build Cortex APK” workflow from the Actions tab.
+5. Download the APK artifact and install it.

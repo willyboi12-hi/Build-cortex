@@ -1,0 +1,42 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.cortex.ai'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.cortex.ai'
+        minSdk 24
+        targetSdk 35
+        versionCode 1
+        versionName '1.0'
+    }
+
+    signingConfigs {
+        forge {
+            storeFile file('forge.keystore')
+            storePassword 'forgeforge'
+            keyAlias 'forge'
+            keyPassword 'forgeforge'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.forge
+        }
+        debug {
+            minifyEnabled false
+            debuggable false
+            signingConfig signingConfigs.forge
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.activity:activity:1.10.1'
+    implementation 'androidx.webkit:webkit:1.12.1'
+}
