@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; object-src 'none'; frame-src 'none'; form-action 'none'; script-src 'sha256-vzr+E5eicz62BM4JJxnAxrDVZ6nacLui0lzTSDFiSVo='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://api.cerebras.ai https://api.mistral.ai https://openrouter.ai https://api.openai.com https://api.x.ai https://api.anthropic.com https://api.deepseek.com https://api.together.xyz https://api.perplexity.ai https://api.sambanova.ai https://integrate.api.nvidia.com https://api.fireworks.ai https://api.deepinfra.com https://router.huggingface.co https://api.moonshot.ai https://api.z.ai https://dashscope-intl.aliyuncs.com https://api.cohere.ai; font-src 'self' data:"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cortex</title><meta name="description" content="Cortex — secure AI chat. Chats and API keys saved on device.">
+<style>
+:root{color-scheme:dark;--bg:#12141a;--fg:#e8eaef;--mut:#8b90a0;--box:#1c1f2a;--ln:#2a2e3a;--ac:#6c8cff;--ac2:#a78bfa}
+@media(prefers-color-scheme:light){:root{color-scheme:light;--bg:#f7f8fc;--fg:#1a1d27;--mut:#6b7280;--box:#eef0f6;--ln:#d8dbe5;--ac:#4f6ef7;--ac2:#7c3aed}}
+svg{display:block}.ic{display:flex;align-items:center}
+.av{color:var(--ac);flex:none;margin-top:3px}.bd{flex:1;min-width:0}
+.act{display:flex;align-items:center;gap:4px;margin-top:6px;font-family:system-ui,sans-serif}.act .via{margin:0}
+.cp{color:var(--mut);padding:4px 6px}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{display:flex;flex-direction:column;height:100dvh;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+header{display:flex;align-items:center;gap:6px;padding:10px 12px;border-bottom:1px solid var(--ln);backdrop-filter:blur(12px);background:color-mix(in srgb,var(--bg) 85%,transparent)}
+header b{flex:1;text-align:center;font-weight:650;letter-spacing:-.02em}
+button,select{border:0;border-radius:12px;background:transparent;color:var(--fg);font:inherit;padding:8px 10px;transition:background .15s,transform .1s}
+button:active{transform:scale(.96)}
+.ic{font-size:20px}
+main{flex:1;overflow-y:auto;padding:8px 14px;scroll-behavior:smooth}
+.m{max-width:760px;margin:16px auto;white-space:pre-wrap;word-wrap:break-word;animation:fadeUp .25s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.m.user{background:linear-gradient(135deg,var(--box),color-mix(in srgb,var(--ac) 12%,var(--box)));width:fit-content;max-width:85%;margin-left:auto;margin-right:0;padding:10px 16px;border-radius:22px 22px 6px 22px;box-shadow:0 2px 8px #0002}
+.m.assistant{display:flex;gap:12px;padding:0 2px;font-family:ui-serif,Georgia,Cambria,serif;font-size:17px;line-height:1.7}
+.via{color:var(--mut);font-size:12px;margin-top:6px;letter-spacing:.01em}.load span{color:var(--mut);font-style:italic}
+.av{color:var(--ac)}
+.m img,#prev img{max-width:140px;max-height:140px;border-radius:10px;margin:0 6px 6px 0;display:block}
+pre{background:#0d0d0d;color:#eee;padding:12px;border-radius:10px;overflow-x:auto;margin:8px 0}
+code{font-family:ui-monospace,monospace;font-size:14px}p code,.m code{background:#8883;border-radius:4px;padding:1px 4px}pre code{background:none;padding:0}
+#hero{text-align:center;margin-top:16vh}#hero h1{font-size:30px;margin:0 0 4px}#hero p{color:var(--mut);margin:0 0 24px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chips button{background:var(--box);border-radius:18px;padding:10px 14px;font-size:14px}
+#prev{display:flex;flex-wrap:wrap;max-width:760px;margin:0 auto;padding:0 14px}
+.box{position:relative;background:var(--box);border-radius:28px;margin:6px 10px calc(12px + env(safe-area-inset-bottom));padding:10px 12px;max-width:760px;width:calc(100% - 20px);align-self:center;border:1px solid var(--ln);box-shadow:0 4px 24px #0003}
+textarea{width:100%;max-height:150px;border:0;outline:0;background:transparent;color:var(--fg);font:inherit;resize:none;padding:6px 6px;line-height:1.45}
+.bar{display:flex;align-items:center;gap:4px}.bar select{font-size:13px;color:var(--mut);padding:6px 4px;max-width:34%;border-radius:10px}.sp{flex:1}
+#send{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-radius:50%;width:40px;height:40px;padding:0;font-size:18px;box-shadow:0 2px 10px color-mix(in srgb,var(--ac) 40%,transparent)}#send:disabled{opacity:.4}
+[hidden]{display:none!important}
+#modes{position:absolute;bottom:100%;left:0;right:0;margin-bottom:8px;background:var(--box);border:1px solid var(--ln);border-radius:18px;padding:6px;max-height:55vh;overflow-y:auto;box-shadow:0 6px 24px #0005}
+#modes button{display:block;width:100%;text-align:left;padding:10px 12px}#modes button small{display:block}#modes .sel{background:var(--bg)}
+#chip{display:inline-block;margin:2px 4px 0;padding:4px 10px;border-radius:14px;background:var(--bg);font-size:13px}
+#drawer{position:fixed;top:0;bottom:0;left:0;width:80%;max-width:320px;background:var(--bg);border-right:1px solid var(--ln);padding:12px;transform:translateX(-100%);transition:.2s;z-index:3;overflow-y:auto}
+#drawer.open{transform:none}#scrim{display:none;position:fixed;inset:0;background:#0007;z-index:2}#scrim.open{display:block}
+.row{display:flex;gap:4px;margin:4px 0;align-items:center}.row .t{flex:1;text-align:left;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.on{background:var(--box)}
+dialog{width:92%;max-width:480px;border:1px solid var(--ln);border-radius:16px;background:var(--bg);color:var(--fg)}
+input,dialog select{width:100%;padding:10px;margin:4px 0;font-size:16px;border:1px solid var(--ln);border-radius:10px;background:var(--bg);color:var(--fg)}
+dialog button{background:var(--box)}small{color:var(--mut)}
+.bd{white-space:normal}.bd>span{display:block}.bd pre{white-space:pre}
+.bd p{margin:0 0 .8em}.bd p:last-of-type{margin-bottom:0}
+.bd h1,.bd h2,.bd h3,.bd h4{margin:.9em 0 .4em;line-height:1.25}.bd h1{font-size:1.4em}.bd h2{font-size:1.25em}.bd h3,.bd h4{font-size:1.1em}
+.bd ul,.bd ol{margin:.3em 0 .8em;padding-left:1.4em}.bd li{margin:.2em 0}
+.bd blockquote{margin:.6em 0;padding:2px 12px;border-left:3px solid var(--ln);color:var(--mut)}
+.bd hr{border:0;border-top:1px solid var(--ln);margin:1em 0}.bd a{color:var(--ac)}
+.tw{overflow-x:auto;margin:.6em 0}.bd table{border-collapse:collapse;font-size:15px}.bd th,.bd td{border:1px solid var(--ln);padding:6px 10px;text-align:left}.bd th{background:var(--box)}
+html{overscroll-behavior:none;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+button,select,label,summary{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.bd{overflow-wrap:anywhere}.m.user{overflow-wrap:anywhere}
+header{min-height:52px}header .ic{min-width:44px;min-height:44px;justify-content:center}
+.bar{min-width:0}.bar .ic{flex:none;min-width:40px;min-height:40px;justify-content:center}
+.bar select{flex:0 1 auto;min-width:0;min-height:40px;text-overflow:ellipsis}
+#send{flex:none;min-width:40px;width:40px;height:40px}
+#hero{margin-top:min(16vh,110px)}
+dialog{max-height:calc(100dvh - 24px);overflow-y:auto}
+dialog button,dialog select{min-height:44px}
+textarea{max-height:min(150px,30dvh)}
+@media(max-width:360px){.bar{gap:2px}.bar select{font-size:13px;padding:6px 2px}.box{margin-left:6px;margin-right:6px;width:calc(100% - 12px);padding:6px 8px}.chips button{font-size:13px;padding:9px 12px}}
+@media(max-height:520px){#hero{margin-top:2vh}#hero p,#hero .chips{display:none}#hero h1{font-size:22px}header{min-height:44px}header .ic{min-height:40px}}
+@media(min-width:900px){#drawer{max-width:360px}}
+#toast{position:fixed;left:50%;bottom:120px;transform:translate(-50%,20px);max-width:90%;background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:14px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:10;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.row .t+button{flex:none;white-space:nowrap}
+[hidden]{display:none!important}
+#tasks{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 8px;scrollbar-width:none}
+#tasks button{flex:none;border:1px solid var(--ln);background:transparent;color:var(--fg);border-radius:999px;padding:6px 12px;font-size:13px;min-height:34px}
+#tasks button.sel{background:var(--ac);border-color:var(--ac);color:#fff}
+body.studio header b{color:var(--ac);font-family:ui-monospace,Menlo,Consolas,monospace}#ws.on{color:var(--ac)}
+.cw{margin:.6em 0;border:1px solid var(--ln);border-radius:12px;overflow:hidden;background:#0d0d0d}
+.cbh{display:flex;justify-content:space-between;align-items:center;padding:4px 8px 4px 12px;font:12px ui-monospace,monospace;color:#9b978d;border-bottom:1px solid #2b2b2b}
+.cb{background:transparent;border:1px solid #3d3c39;color:#ece9e2;border-radius:8px;padding:2px 10px;font-size:12px;min-height:28px}
+.cw pre{margin:0;border-radius:0}body.studio .cw pre code{font-size:13px;line-height:1.45}
+#proj textarea{width:100%;min-height:160px;max-height:50dvh}
+#keys .t{white-space:normal;overflow-wrap:anywhere;text-align:left}#keys .tst{flex:none;white-space:nowrap;min-height:40px}
+</style></head><body>
+<header><button class="ic" id="menu"></button><button class="ic" id="ws"></button><b id="ttl">Cortex</b><button class="ic" id="newb"></button><button class="ic" id="gear"></button></header>
+<div id="scrim"></div>
+<aside id="drawer"><button id="new" class="ic" style="width:100%;gap:8px"></button><div id="list"></div></aside>
+<main id="log"></main>
+<div id="prev"></div>
+<div class="box">
+<div id="modes" hidden></div><div id="chip" hidden></div><div id="tasks" hidden></div>
+<textarea id="q" rows="1" placeholder="Message Cortex"></textarea>
+<div class="bar">
+<button class="ic" id="plus"></button><label class="ic" id="clip" style="padding:8px"><input id="file" type="file" accept="image/*,text/*,.cpp,.cc,.cxx,.c,.h,.hpp,.hh,.hxx,.inl,.ipp,.cs,.py,.js,.ts,.rs,.go,.java,.kt,.md,.json,.yaml,.yml,.toml,.cmake,.glsl,.hlsl,.wgsl,.vert,.frag,.comp,.shader" multiple hidden></label>
+<select id="lv"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="extra">Extra</option><option value="max">Max</option></select>
+<select id="pick"></select><span class="sp"></span><button id="send" class="ic" style="justify-content:center"></button>
+</div></div>
+<dialog id="set">
+<b>Settings</b> <small>cortexV1.6</small><input id="un" placeholder="Your name (for the greeting)">
+<br><b>API keys</b> <small>(saved on device; only you can see them)</small>
+<div id="keys"></div>
+<select id="np"></select><input id="nk" type="password" placeholder="Paste API key" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+<input id="nm" placeholder="Chat model" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><input id="nv" placeholder="Vision model (blank = no images)" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+<div class="row"><button id="add" class="t">Add key</button><button id="rst">Reset cooldowns</button><button id="x">Done</button></div>
+</dialog>
+<dialog id="proj"><b>Project context</b> <small>(sent with every C++ Studio message)</small>
+<textarea id="pt" rows="8" placeholder="Engine name, target platforms (ChromeOS, Android, web), C++ standard, coding rules, threading model, constraints..." autocapitalize="off" spellcheck="false"></textarea>
+<div class="row"><button id="pclose" class="t">Save and close</button></div></dialog>
+<script>
+const $=s=>document.querySelector(s),sleep=ms=>new Promise(r=>setTimeout(r,ms)),PN={huggingface:'Hugging Face',moonshot:'Moonshot (Kimi)',zai:'Z.ai (GLM)',qwen:'Qwen (Alibaba)',cohere:'Cohere',xai:'xAI',openai:'OpenAI',deepseek:'DeepSeek',openrouter:'OpenRouter',sambanova:'SambaNova',nvidia:'NVIDIA',deepinfra:'DeepInfra',together:'Together AI'},
+cap=s=>PN[s]||s[0].toUpperCase()+s.slice(1);
+const IC={menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',edit:'<path d="M12 20h9M4 20l1-4L16 5a2.1 2.1 0 0 1 3 3L8 19Z"/>',
+gear:'<path d="M4 6h8M16 6h4M4 12h2M10 12h10M4 18h10M18 18h2"/><circle cx="14" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="18" r="2"/>',
+clip:'<path d="M21 11.5l-8.5 8.5a5 5 0 0 1-7-7l9-9a3.5 3.5 0 0 1 5 5l-9 9a2 2 0 0 1-3-3l8-8"/>',plus:'<path d="M12 5v14M5 12h14"/>',send:'<path d="M12 19V5M5 12l7-7 7 7"/>',
+trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',chat:'<path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12Z"/>',
+code:'<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/>',search:'<circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/>',
+globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18"/>',chart:'<path d="M4 19V5M4 19h16M8 15l4-5 3 3 5-6"/>',
+calc:'<path d="M18 5H7l6 7-6 7h11"/>',bolt:'<path d="M13 2L4 14h7l-1 8 9-12h-7Z"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',
+spark:'<path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/>',copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',check:'<path d="M5 12l5 5 9-10"/>',stop:'<rect x="6" y="6" width="12" height="12" rx="2"/>'};
+const ic=(n,s=22)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[n]}</svg>`;
+const MI={general:'chat',code:'code',deep:'search',web:'globe',stock:'chart',math:'calc',write:'edit',quick:'bolt'};
+const P={
+gemini:{url:'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',m:'gemini-flash-latest',v:'gemini-flash-latest'},
+groq:{url:'https://api.groq.com/openai/v1/chat/completions',m:'openai/gpt-oss-120b',v:'qwen/qwen3.6-27b'},
+cerebras:{url:'https://api.cerebras.ai/v1/chat/completions',m:'gpt-oss-120b',v:''},
+mistral:{url:'https://api.mistral.ai/v1/chat/completions',m:'mistral-large-latest',v:'mistral-small-latest'},
+openrouter:{url:'https://openrouter.ai/api/v1/chat/completions',m:'openai/gpt-oss-120b:free',v:''},
+openai:{url:'https://api.openai.com/v1/chat/completions',m:'gpt-4o-mini',v:'gpt-4o-mini'},
+xai:{url:'https://api.x.ai/v1/chat/completions',m:'grok-4',v:'grok-4'},
+anthropic:{url:'https://api.anthropic.com/v1/messages',m:'claude-sonnet-5-5',v:'claude-sonnet-5-5'},
+deepseek:{url:'https://api.deepseek.com/chat/completions',m:'deepseek-chat',v:''},
+together:{url:'https://api.together.xyz/v1/chat/completions',m:'openai/gpt-oss-120b',v:''},
+perplexity:{url:'https://api.perplexity.ai/chat/completions',m:'sonar-pro',v:''},
+sambanova:{url:'https://api.sambanova.ai/v1/chat/completions',m:'gpt-oss-120b',v:''},
+nvidia:{url:'https://integrate.api.nvidia.com/v1/chat/completions',m:'openai/gpt-oss-120b',v:''},
+fireworks:{url:'https://api.fireworks.ai/inference/v1/chat/completions',m:'accounts/fireworks/models/gpt-oss-120b',v:''},
+deepinfra:{url:'https://api.deepinfra.com/v1/openai/chat/completions',m:'openai/gpt-oss-120b',v:''},
+huggingface:{url:'https://router.huggingface.co/v1/chat/completions',m:'openai/gpt-oss-120b',v:''},
+moonshot:{url:'https://api.moonshot.ai/v1/chat/completions',m:'kimi-k2.6',v:'kimi-k2.6'},
+zai:{url:'https://api.z.ai/api/paas/v4/chat/completions',m:'glm-5',v:''},
+qwen:{url:'https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions',m:'qwen3.6-plus',v:'qwen3.6-plus'},
+cohere:{url:'https://api.cohere.ai/compatibility/v1/chat/completions',m:'command-a-plus-05-2026',v:''}};
+// strength scores (1-5) per task type, used by Auto routing
+const SK={gemini:{fast:3,code:4,reason:5,write:4,chat:4},groq:{fast:5,code:4,reason:4,write:3,chat:4},cerebras:{fast:5,code:4,reason:4,write:3,chat:3},
+mistral:{fast:3,code:3,reason:3,write:4,chat:3},openrouter:{fast:2,code:3,reason:3,write:3,chat:3},openai:{fast:3,code:4,reason:4,write:4,chat:4},
+xai:{fast:3,code:5,reason:6,write:4,chat:5},anthropic:{fast:3,code:6,reason:6,write:6,chat:6},
+deepseek:{fast:3,code:5,reason:5,write:4,chat:4},together:{fast:4,code:4,reason:4,write:3,chat:3},perplexity:{fast:2,code:3,reason:4,write:3,chat:3},
+sambanova:{fast:5,code:4,reason:4,write:3,chat:3},nvidia:{fast:3,code:4,reason:4,write:3,chat:3},fireworks:{fast:4,code:4,reason:4,write:3,chat:3},deepinfra:{fast:4,code:4,reason:4,write:3,chat:3},
+huggingface:{fast:3,code:4,reason:4,write:3,chat:3},moonshot:{fast:3,code:5,reason:5,write:4,chat:4},zai:{fast:3,code:5,reason:5,write:4,chat:4},
+qwen:{fast:4,code:4,reason:5,write:4,chat:4},cohere:{fast:3,code:3,reason:4,write:4,chat:4}};
+const LVS=['low','medium','high','extra','max'];
+const MODES={
+general:{n:'General',ic:'💬',d:'Everyday chat'},
+code:{n:'Coding',ic:'💻',d:'Write and debug code',kd:'code',sys:'You are an expert software engineer. Give correct, runnable code in fenced blocks, explain briefly, and mention edge cases.'},
+deep:{n:'Deep search',ic:'🔎',d:'In-depth research (model knowledge, no live web)',kd:'reason',min:'extra',sys:'Act as a thorough researcher. Cover the topic from several angles, use headings, note uncertainty and disagreements, and say clearly that you cannot browse live data.'},
+web:{n:'Web deep search',ic:'🌐',d:'Live web with sources (needs a Perplexity key)',web:1,sys:'Search the web thoroughly, synthesize multiple sources, and cite them.'},
+stock:{n:'Live stocks',ic:'📈',d:'Current prices and news (needs a Perplexity key)',web:1,sys:'Look up current market data. Give the price, change, quote time and key recent news with sources. This is information, not financial advice.'},
+math:{n:'Math & logic',ic:'🧮',d:'Step-by-step, verified',kd:'reason',min:'high',sys:'Solve step by step, verify the result, and state the final answer clearly.'},
+write:{n:'Writing',ic:'✍️',d:'Essays, emails, stories',kd:'write',sys:'Write polished, natural prose that matches the requested tone.'},
+quick:{n:'Quick',ic:'⚡',d:'Fast, short answers',kd:'fast',lv:'low'},
+cpp:{n:'C++ Studio',ic:'🧱',d:'AAA-scale C++',kd:'code',min:'extra',sys:'You are a principal engine programmer with 15+ years shipping AAA titles. Write production-grade modern C++ (C++20/23): RAII, value semantics, constexpr, concepts, std::span and std::string_view, explicit ownership and no raw owning pointers. Design for performance and determinism: data-oriented layouts (SoA, archetype ECS), cache locality and false-sharing avoidance (alignas, hardware_destructive_interference_size), custom allocators (linear, pool, stack, arena), job systems with work stealing, lock-free structures with correct memory ordering (state the ordering and why), SIMD where it pays, no allocations or exceptions in hot paths, fixed-timestep simulation with render interpolation, platform abstraction (Windows, Linux, ChromeOS, Android, consoles) and graphics APIs (Vulkan, D3D12, Metal, WebGPU). Strict thread safety with std::atomic, mutexes and lock-free queues. Output complete, compilable code: never placeholders, ellipses or left-as-an-exercise. Split big systems into clearly named headers and sources with #pragma once, namespaces and short doc comments. After the code give assumptions, complexity and performance notes, thread-safety guarantees, how to build and test, and known limitations. If the request is ambiguous, state your assumptions and proceed. Flag undefined-behaviour, ABI and portability risks. Prefer clarity over cleverness. Never claim to have compiled, run or benchmarked the code.'}};
+const TASKS={architect:{n:'Architect',p:'Task: ARCHITECTURE. First give the system design (modules, data flow, threading model, memory strategy, interfaces), then the key headers.'},
+implement:{n:'Implement',p:'Task: IMPLEMENT. Write the full compilable implementation, plus unit tests.'},
+review:{n:'Review',p:'Task: CODE REVIEW. Find bugs, undefined behaviour, data races and performance problems. List findings by severity with fixed code.'},
+optimize:{n:'Optimize',p:'Task: OPTIMIZE. Reason about cache, branch and allocation behaviour, then give measurable improvements with before/after code.'},
+debug:{n:'Debug',p:'Task: DEBUG. Identify the root cause from the symptoms, give a minimal repro and the fix.'},
+port:{n:'Build/Port',p:'Task: BUILD AND PORTING. CMake, toolchains, platform specifics (ChromeOS, Android NDK, Emscripten) and CI.'}};
+const studioCtx=()=>S.ws!='studio'?'':[TASKS[S.task]?.p,S.proj?'Project context (always follow it): '+S.proj:''].filter(Boolean).join(' ');
+const STUDIO_CHIPS=['Design a fixed-timestep game loop with render interpolation','Write a lock-free MPMC job queue','Review my ECS for cache misses','Create a Vulkan frame graph skeleton'];
+const M=()=>S.ws=='studio'?MODES.cpp:(MODES[S.mode]||MODES.general);
+let lastAnalysis=null;
+const LV=()=>{const m=M(); if(m.web) return 'medium'; if(m.lv) return m.lv; if(lastAnalysis && lastAnalysis.effort) return lastAnalysis.effort; return (m.min&&LVS.indexOf(m.min)>LVS.indexOf(S.lv)?m.min:S.lv)};
+const PK=()=>M().web?'perplexity':S.pick;
+const SYS={low:'Answer concisely and directly.',medium:'Think briefly, then give a clear, well-organized answer.'};
+const DEEP='Reason carefully step by step before answering. Break the problem into parts, check each step and edge case, double-check any math or code, and never invent facts or sources: say so when you are unsure. Be thorough, accurate and well organized.';
+// Persist chats, settings, and API keys so you don't have to re-enter keys every session.
+let S={keys:[],chats:[],lv:'medium',pick:'auto',name:'',mode:'general',cur:null,curS:null,ws:'chat',proj:'',task:'implement'};
+try{const raw=localStorage.getItem('cortex');if(raw){const loaded=JSON.parse(raw);S={...S,...loaded};if(!Array.isArray(S.keys))S.keys=[];if(!Array.isArray(S.chats))S.chats=[];}}catch(e){try{const r=localStorage.getItem('cortex');if(r)localStorage.setItem('cortex_bad',r)}catch(_){}}
+let quotaWarned=false;
+const save=()=>{for(let n=0;n<4;n++){
+ try{localStorage.setItem('cortex',JSON.stringify(S));return}catch(e){
+  if(n==0)S.chats.forEach(c=>{if(c.id!=S.cur&&c.id!=S.curS)c.m.forEach(m=>{if(m.i&&m.i.length){m.i=[];m.t=(m.t||'')+' [image removed to save space]'}})});
+  else if(n==1)S.chats=S.chats.filter((c,i)=>i<30||c.id==S.cur||c.id==S.curS);
+  else if(n==2)S.chats=S.chats.filter(c=>c.id==S.cur||c.id==S.curS)}}
+ if(!quotaWarned){quotaWarned=true;try{toast('Storage is full, so recent changes may not be saved. Delete some chats.')}catch(e){}}};
+const ctx=a=>{a=a.filter(m=>!m.e).slice(-40);while(a.length&&a[0].r!='user')a.shift();
+ const o=[];for(const m of a){const p=o[o.length-1];
+  if(p&&p.r==m.r){p.t=(p.t||'')+(m.t?'\n\n'+m.t:'');p.i=[...(p.i||[]),...(m.i||[])]}else o.push({...m,i:m.i?[...m.i]:m.i})}
+ return o};
+let busy=false,pending=[],activeController=null,stopReq=false;
+const cur=()=>S.ws=='studio'?S.curS:S.cur,setCur=id=>{if(S.ws=='studio')S.curS=id;else S.cur=id},inWs=c=>(c.w||'chat')==(S.ws=='studio'?'studio':'chat'),chat=()=>S.chats.find(c=>c.id==cur());
+
+
+let toastT=0;
+function toast(m){let d=$('#toast');if(!d){d=document.createElement('div');d.id='toast';d.setAttribute('role','status');document.body.appendChild(d)}
+ d.textContent=m;d.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>d.classList.remove('on'),3500)}
+function setBusy(b){busy=b;const e=$('#send');e.innerHTML=ic(b?'stop':'send');e.setAttribute('aria-label',b?'Stop':'Send');e.disabled=false}
+function stop(){stopReq=true;if(activeController)activeController.abort()}
+function md(t){
+ const esc=x=>x.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+ const codes=[],ph=h=>{codes.push(h);return '\u0000'+(codes.length-1)+'\u0000'};
+ const cb=(l,c)=>'<div class="cw"><div class="cbh"><span>'+esc(l.trim().slice(0,20))+'</span><button type="button" class="cb">Copy</button></div><pre><code>'+esc(c)+'</code></pre></div>';
+ t=t.replace(/```([^\n`]*)\n?([\s\S]*?)```/g,(_,l,c)=>ph(cb(l,c.replace(/\n$/,''))));
+ t=t.replace(/```([^\n`]*)\n?([\s\S]*)$/,(_,l,c)=>ph(cb(l,c)));
+ const inl=x=>{x=esc(x);const cd=[];
+  x=x.replace(/`([^`\n]+)`/g,(_,c)=>{cd.push('<code>'+c+'</code>');return '\u0002'+(cd.length-1)+'\u0002'});
+  x=x.replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>');
+  x=x.replace(/(^|[^*\w])\*([^*\s][^*\n]*)\*(?!\w)/g,'$1<i>$2</i>');
+  const lk=[];
+  x=x.replace(/\[([^\]\n]+)\]\((https?:\/\/[^\s)"'<]+)\)/g,(_,t,u)=>{lk.push('<a href="'+u+'" target="_blank" rel="noopener noreferrer">'+t+'</a>');return '\u0001'+(lk.length-1)+'\u0001'});
+  x=x.replace(/(^|[\s(])(https?:\/\/[^\s<)"']*[^\s<)"'.,;:!?])/g,(_,p,u)=>p+'<a href="'+u+'" target="_blank" rel="noopener noreferrer">'+u+'</a>');
+  return x.replace(/\u0001(\d+)\u0001/g,(_,n)=>lk[+n]).replace(/\u0002(\d+)\u0002/g,(_,n)=>cd[+n])};
+ const L=t.split('\n'),o=[];let i=0;
+ const isTbl=n=>n+1<L.length&&L[n].includes('|')&&/^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/.test(L[n+1]);
+ const cells=x=>x.trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(c=>inl(c.trim()));
+ while(i<L.length){
+  const l=L[i];let m;
+  if(!l.trim()){i++;continue}
+  if(/^\u0000\d+\u0000$/.test(l.trim())){o.push(l.trim());i++;continue}
+  if(m=l.match(/^(#{1,4})\s+(.*)$/)){o.push('<h'+m[1].length+'>'+inl(m[2])+'</h'+m[1].length+'>');i++;continue}
+  if(/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(l)){o.push('<hr>');i++;continue}
+  if(isTbl(i)){const h=cells(l);i+=2;const rows=[];
+   while(i<L.length&&L[i].includes('|')&&L[i].trim()){rows.push(cells(L[i]));i++}
+   o.push('<div class="tw"><table><thead><tr>'+h.map(c=>'<th>'+c+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>');continue}
+  if(/^>\s?/.test(l)){const q=[];while(i<L.length&&/^>\s?/.test(L[i])){q.push(inl(L[i].replace(/^>\s?/,'')));i++}
+   o.push('<blockquote>'+q.join('<br>')+'</blockquote>');continue}
+  if(/^\s*[-*+]\s+/.test(l)){const it=[];while(i<L.length&&/^\s*[-*+]\s+/.test(L[i])){it.push('<li>'+inl(L[i].replace(/^\s*[-*+]\s+/,''))+'</li>');i++}
+   o.push('<ul>'+it.join('')+'</ul>');continue}
+  if(/^\s*\d+[.)]\s+/.test(l)){const it=[];while(i<L.length&&/^\s*\d+[.)]\s+/.test(L[i])){it.push('<li>'+inl(L[i].replace(/^\s*\d+[.)]\s+/,''))+'</li>');i++}
+   o.push('<ol>'+it.join('')+'</ol>');continue}
+  const p=[];
+  while(i<L.length&&L[i].trim()&&!/^(#{1,4}\s|>|\s*[-*+]\s+|\s*\d+[.)]\s+|\s*(-{3,}|\*{3,}|_{3,})\s*$|\u0000\d+\u0000$)/.test(L[i])&&!isTbl(i)){p.push(inl(L[i]));i++}
+  if(!p.length){p.push(inl(L[i]));i++}
+  o.push('<p>'+p.join('<br>')+'</p>')}
+ return o.join('').replace(/\u0000(\d+)\u0000/g,(_,n)=>codes[+n])}
+function greet(){const h=new Date().getHours();return(h<5?'Burning the midnight oil':h<12?'Good morning':h<18?'Good afternoon':'Good evening')+(S.name?', '+S.name:'')}
+function cpy(t,b){const ok=()=>{b.innerHTML=ic('check',16);setTimeout(()=>b.innerHTML=ic('copy',16),1200)};
+ const fb=()=>{const a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}a.remove();ok()};
+ try{navigator.clipboard.writeText(t).then(ok,fb)}catch(e){fb()}}
+function bubble(r,t,imgs,via,err){const d=document.createElement('div');d.className='m '+r;let h=d;
+ if(r=='assistant'){const a=document.createElement('div');a.className='av';a.innerHTML=ic('spark',22);h=document.createElement('div');h.className='bd';d.append(a,h)}
+ (imgs||[]).forEach(u=>{const i=document.createElement('img');i.src=u;i.alt='Attached image';h.appendChild(i)});
+ const s=document.createElement('span');if(r=='assistant')s.innerHTML=md(t||'');else s.textContent=t||'';h.appendChild(s);
+ if(via){const a2=document.createElement('div');a2.className='act';const v=document.createElement('div');v.className='via';v.textContent=via;
+  const c=document.createElement('button');c.className='cp';c.innerHTML=ic('copy',16);c.setAttribute('aria-label','Copy reply');c.onclick=()=>cpy(t,c);a2.append(v,c);h.appendChild(a2)}
+ if(err){const a2=document.createElement('div');a2.className='act';const rb=document.createElement('button');rb.className='cp';rb.textContent='Retry';rb.onclick=retry;a2.appendChild(rb);h.appendChild(a2)}
+ $('#log').appendChild(d);$('#log').scrollTop=1e9;return d}
+function retry(){if(busy)return;const c=chat();if(!c)return;while(c.m.length&&c.m[c.m.length-1].e)c.m.pop();
+ const u=c.m[c.m.length-1];if(!u||u.r!='user')return;c.m.pop();pending=u.i||[];save();send(u.t)}
+function hero(){const d=document.createElement('div');d.id='hero';
+ const sp=document.createElement('div');sp.innerHTML=ic('spark',40);sp.style.cssText='color:var(--ac);display:flex;justify-content:center;margin-bottom:8px';d.appendChild(sp);
+ const h=document.createElement('h1');h.textContent=S.ws=='studio'?'C++ Studio':greet();h.style.fontFamily='ui-serif,Georgia,serif';const p=document.createElement('p');p.textContent=S.ws=='studio'?'AAA-grade engine code, reviews and architecture.':'How can I help you today?';d.append(h,p);
+ const w=document.createElement('div');w.className='chips';
+ (S.ws=='studio'?STUDIO_CHIPS:['Explain black holes simply','Help me debug my code','Write a polite email asking for an extension','Give me 5 project ideas']).forEach(t=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>send(t);w.appendChild(b)});
+ d.appendChild(w);$('#log').appendChild(d)}
+function newChat(){const c={id:Date.now(),t:'New chat',m:[],w:S.ws=='studio'?'studio':'chat'};S.chats.unshift(c);setCur(c.id);save();draw();closeDrawer()}
+function closeDrawer(){$('#drawer').classList.remove('open');$('#scrim').classList.remove('open')}
+function draw(){const c=chat();$('#log').innerHTML='';
+ if(c&&c.m.length)c.m.forEach((m,n)=>bubble(m.r,m.t,m.i,m.via,m.e&&n==c.m.length-1));else hero();
+ $('#list').innerHTML='';
+ S.chats.filter(inWs).forEach(ch=>{const r=document.createElement('div');r.className='row';
+  const b=document.createElement('button');b.className='t'+(ch.id==cur()?' on':'');b.textContent=ch.t;
+  b.onclick=()=>{setCur(ch.id);save();draw();closeDrawer()};
+  const x=document.createElement('button');x.innerHTML=ic('trash',18);
+  x.setAttribute('aria-label','Delete chat');
+  x.onclick=()=>{if(!x.dataset.arm){x.dataset.arm=1;x.textContent='Delete?';x.style.color='#e5484d';setTimeout(()=>{if(x.isConnected){delete x.dataset.arm;x.innerHTML=ic('trash',18);x.style.color=''}},3000);return}S.chats=S.chats.filter(z=>z.id!=ch.id);if(cur()==ch.id)setCur(S.chats.find(inWs)?.id||null);save();draw()};
+  r.append(b,x);$('#list').appendChild(r)})}
+function shrink(f){return new Promise((res,rej)=>{const u=URL.createObjectURL(f),i=new Image();
+ i.onload=()=>{try{const s=Math.min(1,1024/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.max(1,i.width*s);c.height=Math.max(1,i.height*s);
+  c.getContext('2d').drawImage(i,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.7))}catch(e){rej(e)}finally{URL.revokeObjectURL(u)}};
+ i.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('bad image'))};i.src=u})}
+function prev(){$('#prev').innerHTML='';pending.forEach(u=>{const i=document.createElement('img');i.src=u;i.onclick=()=>{pending=pending.filter(p=>p!=u);prev()};$('#prev').appendChild(i)})}
+
+// ---- auto routing ----
+// Cortex smart request analyzer: multi-signal scoring for kd + effort
+function analyzeRequest(t){
+  const words=t.trim().split(/\s+/).filter(Boolean);
+  const len=words.length, chars=t.length;
+  const hasCode=/```|function\s*\(|def\s+\w+|class\s+\w+|import\s+|public\s+|private\s+|console\.|System\.out|printf|#include|template\s*<|std::/i.test(t);
+  const hasMath=/[=+\-*/^√∫∑∏≈≠≤≥]|\\frac|equation|derivative|integral|prove that|solve for/i.test(t);
+  const hasReason=/\b(why|how does|explain|compare|analyze|analyse|reason|evaluate|critique|trade-?off|pros and cons|step by step|think carefully|deep dive|thoroughly)\b/i.test(t);
+  const hasWrite=/\b(write|essay|story|poem|email|letter|rewrite|translate|caption|blog|draft|compose|narrative)\b/i.test(t);
+  const hasComplex=/\b(architect|design system|optimize|performance|concurrency|thread.?safe|lock.?free|cache|SIMD|allocator|Vulkan|D3D|Metal|WebGPU|ECS|job system|undefined behaviour|ABI)\b/i.test(t) || S.ws==='studio';
+  const hasQuick=/\b(quick|brief|short|tl;dr|just tell me|one sentence|yes or no)\b/i.test(t) || len<6;
+  const multiQ=(t.match(/\?/g)||[]).length>1;
+  const longForm=chars>800 || len>120;
+  const techDensity=(t.match(/\b(api|sdk|http|json|async|await|promise|mutex|atomic|pointer|memory|latency|throughput|algorithm|complexity|O\([nlog]\))\b/gi)||[]).length;
+
+  let scores={code:0,reason:0,write:0,fast:0,chat:1};
+  if(hasCode || /bug|error|compile|debug|refactor|implement|function|class|module/i.test(t)) scores.code+=4;
+  if(hasMath || hasReason || multiQ || longForm) scores.reason+=3;
+  if(hasWrite) scores.write+=4;
+  if(hasComplex) {scores.code+=2; scores.reason+=3;}
+  if(hasQuick && !hasComplex && !hasCode) scores.fast+=5;
+  if(techDensity>3) {scores.code+=1; scores.reason+=1;}
+  if(len>40 && !hasQuick) scores.reason+=1;
+  if(S.mode==='code' || S.ws==='studio') scores.code+=2;
+  if(S.mode==='deep' || S.mode==='math') scores.reason+=2;
+  if(S.mode==='write') scores.write+=2;
+  if(S.mode==='quick') scores.fast+=3;
+
+  let kd='chat', max=-1;
+  for(const k of Object.keys(scores)) if(scores[k]>max){max=scores[k]; kd=k;}
+
+  // Effort selection: low/medium/high/extra/max
+  let effort='medium';
+  if(hasQuick && !hasComplex && scores.reason<2) effort='low';
+  else if(hasComplex || longForm || scores.reason>=5 || scores.code>=5 || S.ws==='studio') effort='extra';
+  else if(multiQ || hasMath || scores.reason>=3 || chars>400) effort='high';
+  else if(len<12 && !hasCode) effort='low';
+  // Respect mode mins and user setting, but allow Cortex to bump up for hard asks
+  const userLv=S.lv, modeMin=M().min;
+  const rank=l=>LVS.indexOf(l);
+  if(modeMin && rank(modeMin)>rank(effort)) effort=modeMin;
+  if(rank(userLv)>rank(effort) && userLv!=='low') effort=userLv; // user can force higher, but Cortex can still raise for complex
+  if(S.ws==='studio' && rank(effort)<rank('extra')) effort='extra';
+  if(effort==='extra' && (hasComplex || longForm || scores.reason>=6)) effort='max';
+
+  return {kd, effort, scores, reason:`signals: code=${scores.code} reason=${scores.reason} write=${scores.write} fast=${scores.fast} → ${kd}/${effort}`};
+}
+function kind(t){return analyzeRequest(t).kd}
+
+function anth(k,msgs,needV,onTok){
+ const sys=msgs.filter(m=>m.role=='system').map(m=>m.content).join('\n');
+ const conv=msgs.filter(m=>m.role!='system').map(m=>({role:m.role,content:Array.isArray(m.content)?m.content.map(p=>p.type=='image_url'?{type:'image',source:{type:'base64',media_type:'image/jpeg',data:p.image_url.url.split(',')[1]}}:p):m.content}));
+ return{method:'POST',headers:{'Content-Type':'application/json','x-api-key':k.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:(needV?k.v:k.m)||P.anthropic.m,max_tokens:S.ws=='studio'?16000:8192,system:sys,messages:conv,...(onTok?{stream:true}:{})})}}
+// ---- rotation + smart queue ----
+const stopErr=()=>Object.assign(Error('Stopped'),{stop:1});
+const txt=c=>typeof c=='string'?c:Array.isArray(c)?c.map(p=>typeof p=='string'?p:(p&&p.text)||'').join(''):'';
+let TMO={first:120000,whole:240000,idle:60000};
+const fail=m=>Object.assign(Error(m),{fail:1});
+const clean=t=>t.replace(/<think>[\s\S]*?(<\/think>|$)/gi,'').replace(/^\s+/,'');
+async function ask(msgs,needV,kd,onWait,not,onTok){
+ const bad=new Set();let lastErr=null;
+ for(;;){
+  if(stopReq)throw stopErr();
+  const el=S.keys.filter(k=>P[k.p]&&!bad.has(k)&&!k.dead&&(!needV||k.v)&&(PK()=='auto'||k.p==PK()));
+  if(!el.length&&lastErr)throw lastErr;
+  if(!el.length)throw Error(PK()!='auto'?'No usable '+cap(PK())+' key for this. '+(M().web?'This mode needs a Perplexity key (add it in ⚙).':'Switch the model to Auto or add a key in ⚙.'):needV?'No key with image support. Add a Gemini, Groq, Mistral or OpenAI key in ⚙.':'No working key.'+(S.keys.some(k=>k.dead)?' A key was rejected (invalid or no access). Check it in ⚙, then tap Reset cooldowns.':' Add one in ⚙ settings.'));
+  const now=Date.now();let ready=el.filter(k=>k.cool<=now);
+  if(!ready.length){const s=el.reduce((a,b)=>a.cool<b.cool?a:b);
+   if(s.cool-now>120000)throw Error('Every matching key is cooling down ('+(s.why||'rate limit')+'). Try again in about '+Math.ceil((s.cool-now)/60000)+' min, or add another key in ⚙.');
+   onWait(s);await sleep(Math.min(2000,Math.max(100,s.cool-now)));continue}
+  const deep=LVS.indexOf(LV())>=2,sc=k=>SK[k.p][kd]+(deep?SK[k.p].reason:0);
+  {const alt=ready.filter(k=>k.p!=not);if(alt.length)ready=alt}
+  ready.sort((a,b)=>sc(b)-sc(a)||(a.last||0)-(b.last||0));
+  const k=ready[0];k.last=now;onWait(null);
+  const ctl=new AbortController();activeController=ctl;let wd=0,timedOut=false;
+  const arm=ms=>{clearTimeout(wd);wd=setTimeout(()=>{timedOut=true;ctl.abort()},ms)};
+  try{
+   let r;
+   try{
+    const opts=k.p=='anthropic'?anth(k,msgs,needV,onTok):{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+k.key},
+     body:JSON.stringify({model:(needV?k.v:k.m)||P[k.p].m,messages:msgs,...(onTok?{stream:true}:{})})};
+    opts.credentials='omit';opts.referrerPolicy='no-referrer';opts.cache='no-store';opts.signal=ctl.signal;
+    arm(onTok?TMO.first:TMO.whole);
+    r=await fetch(P[k.p].url,opts);
+   }catch(e){if(stopReq)throw stopErr();if(timedOut){k.cool=Date.now()+30000;k.why='no response'}throw fail(timedOut?cap(k.p)+' took too long to respond.':'Could not reach '+cap(k.p)+'. Check your connection, or this provider may not allow requests from apps.')}
+   if(r.status==429){const ra=parseFloat(r.headers.get('retry-after'));let bd='';try{bd=await r.text()}catch(_){}
+    const quota=/insufficient_quota|exceeded your current quota|billing|out of credits|insufficient (balance|credits)/i.test(bd);
+    k.cool=Date.now()+(quota?3600:(ra>0?ra:60))*1000;k.why=quota?'quota or billing':'rate limit';save();continue}
+   if(r.status==401||r.status==403){k.dead=true;save();continue}
+   if(r.status>=500){k.cool=Date.now()+15000;k.why='server error';save();continue}
+   if(!r.ok){const j=await r.json().catch(()=>({}));const msg=(typeof j.error=='string'?j.error:j.error?.message)||j.message||j[0]?.error?.message||String(r.status);
+    throw fail(cap(k.p)+': '+msg+(r.status==404||/model/i.test(msg)?' (Check the model name for this key in settings.)':''))}
+   let t='',cit=null;
+   if(onTok&&r.body&&/event-stream/i.test(r.headers.get('content-type')||'')){
+    const rd=r.body.getReader(),dec=new TextDecoder();let buf='';
+    try{for(;;){arm(TMO.idle);const {done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});
+     let n;while((n=buf.indexOf('\n'))>=0){const line=buf.slice(0,n).trim();buf=buf.slice(n+1);
+      if(!line.startsWith('data:'))continue;const d=line.slice(5).trim();if(!d||d=='[DONE]')continue;
+      let ev;try{ev=JSON.parse(d)}catch(_){continue}
+      if(ev.error)throw fail(cap(k.p)+': '+((typeof ev.error=='string'?ev.error:ev.error.message)||'stream error'));
+      let piece='';
+      if(k.p=='anthropic'){if(ev.type=='content_block_delta'&&ev.delta&&ev.delta.text)piece=ev.delta.text}
+      else{piece=txt(ev.choices?.[0]?.delta?.content);if(ev.citations)cit=ev.citations}
+      if(piece){t+=piece;const c=clean(t);if(c)onTok(c)}}}}
+    catch(e){
+     if(stopReq){if(!t)throw stopErr()}
+     else if(timedOut){if(!t)throw fail(cap(k.p)+' stopped responding.');t+='\n\n[timed out]'}
+     else{if(!t)throw (e.fail?e:fail('Connection lost while talking to '+cap(k.p)+'.'));t+='\n\n[connection lost]'}}
+   }else{
+    let j=await r.json().catch(()=>({}));
+    if(stopReq)throw stopErr();
+    if(timedOut)throw fail(cap(k.p)+' took too long to respond.');
+    if(j.error)throw fail(cap(k.p)+': '+((typeof j.error=='string'?j.error:j.error.message)||'error'));
+    t=k.p=='anthropic'?(j.content||[]).map(b=>b.text||'').join(''):txt(j.choices?.[0]?.message?.content);cit=j.citations;j=null;
+    if(onTok&&t)onTok(clean(t))}
+   t=clean(t);
+   if(!t.trim()){if(stopReq)throw stopErr();throw fail(cap(k.p)+' returned an empty reply.')}
+   if(cit?.length)t+='\n\nSources:\n'+cit.map((u,i)=>(i+1)+'. '+u).join('\n');
+   return{text:t,via:cap(k.p),p:k.p}
+  }catch(e){if(e&&e.fail){lastErr=e;bad.add(k);continue}throw e}
+  finally{clearTimeout(wd);if(activeController===ctl)activeController=null}}}
+
+// ---- thinking levels: low/medium = 1 pass, high = deep 1 pass, extra = +review, max = plan + answer + review ----
+const note=(ms,x)=>{ms=ms.map(m=>({...m}));const l=ms[ms.length-1];
+ if(l&&l.role=='user')l.content=Array.isArray(l.content)?[...l.content,{type:'text',text:x}]:(l.content||'')+'\n\n'+x;else ms.push({role:'user',content:x});return ms};
+async function think(msgs,needV,kd,onWait,onStep,onTok){
+ const lv=LV(),qt=()=>{},sys={role:'system',content:[SYS[lv]||DEEP,M().sys,studioCtx(),'Today is '+new Date().toDateString()+'.'].filter(Boolean).join(' ')};
+ const run=(ms,not,tk)=>ask([sys,...ms],needV,kd,onWait,not,tk);let plan='';
+ const fin=lv!='extra'&&lv!='max';
+ if(lv=='max'){onStep('Planning...');plan=(await run(note(msgs,'Before answering my last message, write a short plan: key considerations, pitfalls and approach. Output only the plan.'),undefined,qt)).text}
+ onStep('Thinking...');
+ let r=await run(plan?note(msgs,'Follow this plan to fully answer my last message:\n'+plan):msgs,undefined,fin?onTok:qt);
+ if(!fin){onStep('Reviewing...');
+  r=await run([...msgs,{role:'assistant',content:r.text},{role:'user',content:'Review your answer for mistakes, gaps or weak reasoning, then output only the improved final answer.'}],r.p,onTok)}
+ return r}
+
+async function send(txt){
+ const text=(typeof txt=='string'?txt:$('#q').value).trim();if((!text&&!pending.length)||busy)return;
+ if(!chat())newChat();const c=chat();
+ c.m.push({r:'user',t:text,i:pending});if(c.t=='New chat')c.t=(text||'Image').slice(0,30);
+ const needV=pending.length>0;pending=[];prev();$('#q').value='';$('#q').style.height='auto';setBusy(true);stopReq=false;save();draw();
+ const b=bubble('assistant','Thinking...');b.classList.add('load');const sp=b.querySelector('span');
+ let dl=0,pv='',lab='Thinking...',streaming=false,raf=0,last='';
+ const onTok=t=>{last=t;streaming=true;b.classList.remove('load');if(raf)return;
+  raf=requestAnimationFrame(()=>{raf=0;const lg=$('#log'),near=lg.scrollHeight-lg.scrollTop-lg.clientHeight<150;sp.innerHTML=md(last);if(near)lg.scrollTop=1e9})};
+ const show=()=>{if(streaming)return;sp.textContent=dl?`All limits maxed. Waiting ${Math.max(0,Math.ceil((dl-Date.now())/1000))}s for ${pv} to unlock...`:lab};
+ const tk=setInterval(show,250);
+ try{
+  const msgs=ctx(c.m).map((m,n,a)=>({role:m.r,content:m.i&&m.i.length?(n==a.length-1?
+   [{type:'text',text:m.t||'Describe this image.'},...m.i.map(u=>({type:'image_url',image_url:{url:u}}))]:(m.t||'')+' [image]'):m.t}));
+  lastAnalysis = needV ? {kd:'chat',effort:S.lv||'medium'} : analyzeRequest(text);
+  const kd = M().kd || lastAnalysis.kd;
+  const res=await think(msgs,needV,kd,k=>{dl=k?k.cool:0;pv=k?cap(k.p):'';show()},l=>{lab=l;show()},onTok);
+  const effortLabel = cap(LV());
+  c.m.push({r:'assistant',t:res.text,via:`${res.via} · ${M().n} · ${effortLabel}`+(stopReq?' · stopped':'')+(lastAnalysis&&lastAnalysis.reason?' · cortex':'')})
+ }catch(e){c.m.push(e.stop?(last?{r:'assistant',t:last,via:'Stopped'}:{r:'assistant',t:'Stopped.',e:1}):{r:'assistant',t:'⚠ '+e.message,e:1})}
+ clearInterval(tk);cancelAnimationFrame(raf);setBusy(false);stopReq=false;save();draw();
+}
+
+// ---- settings ----
+const TEST=new Map();
+async function testKey(k){
+ const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),25000);
+ try{
+  const ms=[{role:'system',content:'Reply with the single word OK.'},{role:'user',content:'Say OK.'}];
+  const o=k.p=='anthropic'?anth(k,ms,false,null):{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+k.key},body:JSON.stringify({model:k.m||P[k.p].m,messages:ms})};
+  o.credentials='omit';o.referrerPolicy='no-referrer';o.cache='no-store';o.signal=ctl.signal;
+  let r;try{r=await fetch(P[k.p].url,o)}catch(e){return ctl.signal.aborted?'No response in 25 seconds.':'Could not reach '+cap(k.p)+'. No internet, or this provider blocks requests from apps.'}
+  let j={};try{j=await r.json()}catch(_){}
+  const msg=(typeof j.error=='string'?j.error:j.error?.message)||j.message||j[0]?.error?.message||'';
+  if(r.ok){const out=k.p=='anthropic'?(j.content||[]).map(b=>b.text||'').join(''):txt(j.choices?.[0]?.message?.content),rc=j.choices?.[0]?.message?.reasoning_content;
+   return (clean(out).trim()||rc)?'\u2713 Works':'Reachable, but the model sent an empty reply.'}
+  if(r.status==401||r.status==403)return 'Key rejected ('+r.status+'). Check the whole key was pasted and has API access.';
+  if(r.status==429)return 'Key is valid but rate-limited or out of credit right now.';
+  if(r.status==404||/model/i.test(msg))return 'Model name not found for this key. Edit it in settings. '+msg.slice(0,100);
+  return cap(k.p)+' error '+r.status+(msg?': '+msg.slice(0,120):'')
+ }finally{clearTimeout(to)}}
+function keysUI(){const now=Date.now();$('#keys').innerHTML='';
+ S.keys.forEach(k=>{const r=document.createElement('div');r.className='row';
+  const st=k.dead?'rejected':k.cool>now?'cooling '+Math.ceil((k.cool-now)/1000)+'s':'ready';
+  const l=document.createElement('div');l.className='t';l.textContent=`${cap(k.p)} ...${k.key.slice(-4)}${k.m?' · '+k.m:''} · ${st}`+(TEST.get(k)?' · '+TEST.get(k):'');
+  const x=document.createElement('button');x.innerHTML=ic('trash',18);x.onclick=()=>{S.keys=S.keys.filter(z=>z!=k);save();keysUI()};
+  const tb=document.createElement('button');tb.textContent='Test';tb.className='tst';
+  tb.onclick=async()=>{TEST.set(k,'testing...');keysUI();const m=await testKey(k);TEST.set(k,m);if(m.startsWith('\u2713')){k.dead=false;k.cool=0;save()}keysUI()};
+  r.append(l,tb,x);$('#keys').appendChild(r)})}
+function fill(){const p=P[$('#np').value];$('#nm').value=p.m;$('#nv').value=p.v}
+$('#np').innerHTML=Object.keys(P).map(p=>`<option value="${p}">${cap(p)}</option>`).join('');$('#np').onchange=fill;fill();
+$('#pick').innerHTML='<option value="auto">Auto</option>'+Object.keys(P).map(p=>`<option value="${p}">${cap(p)}</option>`).join('');
+$('#pick').value=S.pick;$('#lv').value=S.lv;
+$('#pick').onchange=e=>{S.pick=e.target.value;save()};$('#lv').onchange=e=>{S.lv=e.target.value;save()};
+$('#add').onclick=()=>{const key=$('#nk').value.trim();if(!key)return;
+ if(S.keys.some(z=>z.p==$('#np').value&&z.key==key)){const ab=$('#add');ab.textContent='Already added';setTimeout(()=>ab.textContent='Add key',1500);return}
+ S.keys.push({p:$('#np').value,key,m:$('#nm').value.trim(),v:$('#nv').value.trim(),cool:0,dead:false});$('#nk').value='';save();
+ const nk=S.keys[S.keys.length-1];TEST.set(nk,'testing...');keysUI();testKey(nk).then(m=>{TEST.set(nk,m);keysUI()})};
+$('#rst').onclick=()=>{S.keys.forEach(k=>{k.cool=0;k.dead=false});save();keysUI()};
+$('#gear').onclick=()=>{$('#un').value=S.name;keysUI();$('#set').showModal()};
+$('#x').onclick=()=>$('#set').close();
+$('#set').addEventListener('close',()=>{S.name=$('#un').value.trim();save();if(!busy)draw()});
+$('#menu').onclick=()=>{$('#drawer').classList.add('open');$('#scrim').classList.add('open')};
+$('#scrim').onclick=closeDrawer;$('#new').onclick=newChat;$('#newb').onclick=newChat;
+window.__cgptPickerOpen=false;
+$('#file').addEventListener('click',()=>{window.__cgptPickerOpen=true});
+$('#file').addEventListener('cancel',()=>{window.__cgptPickerOpen=false});
+const CODE_RE=/\.(cpp|cc|cxx|c|h|hpp|hh|hxx|inl|ipp|cs|py|js|ts|rs|go|java|kt|txt|md|json|yaml|yml|toml|cmake|glsl|hlsl|wgsl|vert|frag|comp|shader|ini|cfg|log)$/i;
+$('#file').onchange=async e=>{try{for(const f of e.target.files){
+ if((f.type||'').startsWith('image/')){if(pending.length>=6){toast('Up to 6 images per message.');continue}try{pending.push(await shrink(f))}catch(_){toast("Couldn't read that image.")}}
+ else if(CODE_RE.test(f.name)||(f.type||'').startsWith('text/')){if(f.size>400000){toast(f.name+' is too large (400 KB max).');continue}
+  try{const tx=await f.text(),q=$('#q'),ext=(f.name.split('.').pop()||'').toLowerCase();q.value+=(q.value?'\n\n':'')+'// File: '+f.name+'\n```'+ext+'\n'+tx.replace(/\n$/,'')+'\n```\n';q.style.height='auto';q.style.height=q.scrollHeight+'px'}catch(_){toast("Couldn't read "+f.name)}}
+ else toast('Unsupported file: '+f.name)}}finally{window.__cgptPickerOpen=false;e.target.value='';prev()}};
+$('#send').onclick=()=>busy?stop():send();
+$('#q').addEventListener('keydown',e=>{if(e.key=='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();send()}});
+$('#q').addEventListener('input',e=>{e.target.style.height='auto';e.target.style.height=e.target.scrollHeight+'px'});
+function chip(){const m=M(),c=$('#chip');c.hidden=!S.mode||S.mode=='general';c.innerHTML=`<span style="display:flex;gap:6px;align-items:center">${ic(MI[S.mode]||'chat',14)}${m.n}${ic('x',12)}</span>`}
+function menu(){const d=$('#modes');d.innerHTML='';
+ Object.entries(MODES).filter(([id])=>id!='cpp').forEach(([id,m])=>{const b=document.createElement('button');if((S.mode||'general')==id)b.className='sel';
+  b.innerHTML=`<span style="display:flex;gap:10px;align-items:center">${ic(MI[id],18)}${m.n}</span>`;const s=document.createElement('small');s.textContent=m.d||'';b.appendChild(s);
+  b.onclick=()=>{S.mode=id;save();chip();d.hidden=true};d.appendChild(b)})}
+$('#plus').onclick=()=>{const d=$('#modes');if(d.hidden){menu();d.hidden=false}else d.hidden=true};
+$('#chip').onclick=()=>{S.mode='general';save();chip()};
+$('#menu').innerHTML=ic('menu');$('#newb').innerHTML=ic('edit');$('#gear').innerHTML=ic('gear');$('#plus').innerHTML=ic('plus');
+$('#clip').insertAdjacentHTML('afterbegin',ic('clip'));$('#send').innerHTML=ic('send');$('#new').innerHTML=ic('edit',18)+'New chat';
+[['menu','Menu'],['newb','New chat'],['gear','Settings'],['plus','Modes'],['send','Send'],['clip','Attach image or code file'],['new','New chat'],['lv','Thinking level'],['pick','Provider'],['q','Message'],['x','Done']].forEach(([i,l])=>$('#'+i).setAttribute('aria-label',l));
+// Android back button: close the topmost panel first; returns true when it handled the press.
+window.cortexBack=()=>{const d=$('#set');if(d.open){d.close();return true}if($('#proj').open){$('#proj').close();return true}if(!$('#modes').hidden){$('#modes').hidden=true;return true}
+ if($('#drawer').classList.contains('open')){closeDrawer();return true}if(S.ws=='studio'){setWs('chat');return true}return false};
+function renderTasks(){const d=$('#tasks');d.innerHTML='';
+ Object.entries(TASKS).forEach(([id,t])=>{const b=document.createElement('button');b.textContent=t.n;if(S.task==id)b.className='sel';b.onclick=()=>{S.task=id;save();renderTasks()};d.appendChild(b)});
+ const p=document.createElement('button');p.textContent=S.proj?'Project \u2713':'Project';p.onclick=()=>{$('#pt').value=S.proj||'';$('#proj').showModal()};d.appendChild(p)}
+function applyWs(){const st=S.ws=='studio';document.body.classList.toggle('studio',st);$('#ttl').textContent=st?'C++ Studio':'Cortex';
+ $('#tasks').hidden=!st;$('#plus').hidden=st;$('#modes').hidden=true;if(st)$('#chip').hidden=true;else chip();
+ $('#q').placeholder=st?'Describe the system or paste code...':'Message Cortex';$('#ws').classList.toggle('on',st);renderTasks();draw();closeDrawer()}
+function setWs(w){if(S.ws==w)return;S.ws=w;save();applyWs()}
+$('#ws').innerHTML=ic('code');$('#ws').setAttribute('aria-label','C++ Studio');$('#ws').onclick=()=>setWs(S.ws=='studio'?'chat':'studio');
+$('#proj').addEventListener('close',()=>{S.proj=$('#pt').value.trim().slice(0,4000);save();renderTasks()});$('#pclose').onclick=()=>$('#proj').close();
+$('#log').addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.cb');if(!b)return;const t=b.closest('.cw').querySelector('code').textContent;
+ const ok=()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)};
+ const fb=()=>{const a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(_){}a.remove();ok()};
+ try{navigator.clipboard.writeText(t).then(ok,fb)}catch(_){fb()}});
+chip();applyWs();if(!S.keys.length){$('#set').showModal();$('#nk').focus();}
+</script></body></html>
